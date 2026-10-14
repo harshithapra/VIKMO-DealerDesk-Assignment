@@ -1,41 +1,192 @@
-# DealerDesk starter
+# VIKMO DealerDesk — AI/ML Assignment
 
-A minimal Django project that already follows the run contract. It has **no models and no business logic**: designing those is the assignment.
+An AI/ML-enabled DealerDesk application built with Django and PostgreSQL. The project provides product catalogue access, inventory forecasting, reorder suggestions, and an AI-powered dealer assistant.
 
-What's here:
+## Features
 
-- `dealerdesk/settings.py` reads `DATABASE_URL`, `SUPPLIER_API_URL`, `SUPPLIER_API_KEY` and the LLM keys (Gemini, OpenAI, Anthropic, Groq), refuses anything but PostgreSQL, and turns off authentication for the API.
-- `GET /api/health/` returns `{"status": "ok"}`.
-- `python manage.py seed_data` exists but does nothing yet.
-- `requirements.txt` with Django, DRF, the Postgres driver and `requests`. Add your LLM provider's SDK if you build the assistant.
+### 1. Django Backend
+- Django-based REST API.
+- PostgreSQL database integration.
+- Health-check endpoint.
+- Product catalogue and inventory APIs.
+- Reorder suggestions based on inventory data.
 
-## Set up
+### 2. AI Dealer Assistant
+- Assistant implementation in `core/assistant.py`.
+- Tool-based interactions for product search, stock checking, and draft order creation.
+- Product and inventory information grounded in application data.
+- Draft-order workflow designed to avoid automatically placing orders.
 
-1. Copy everything in this folder into the root of your repo, next to `data/`.
-2. Get a PostgreSQL database:
-   - **Hosted, free:** create a project on neon.tech or supabase.com and copy its connection string, or
-   - **Local:** install PostgreSQL and run `createdb dealerdesk`.
-3. Copy `.env.example` to `.env` and fill in `DATABASE_URL` (and your LLM key if you build the assistant).
-4. Install and run:
+**Note:** Configure a supported LLM provider and API key before testing live assistant responses.
+
+### 3. Inventory Forecasting
+- Forecasting implementation in `ml/forecasting.py`.
+- Forecast data in `ml/forecast.csv`.
+- Four-week forecasts for 40 SKUs.
+- Total forecast records: 160.
+- Reorder suggestions use current inventory information.
+
+### 4. Supplier Integration
+- Supplier mock service in `supplier_mock/mock_supplier.py`.
+- Configurable supplier URL and API key.
+- Supplier integration can be tested locally.
+
+## Technology Stack
+
+- Python
+- Django
+- Django REST Framework
+- PostgreSQL
+- Machine Learning / Forecasting
+- External LLM integration
+- REST APIs
+
+## Project Structure
+
+```text
+VIKMO DealerDesk Assignment/
+├── core/
+│   ├── assistant.py
+│   ├── models.py
+│   ├── views.py
+│   ├── urls.py
+│   └── management/commands/seed_data.py
+├── dealerdesk/
+│   ├── settings.py
+│   └── urls.py
+├── data/
+├── ml/
+│   ├── forecasting.py
+│   └── forecast.csv
+├── supplier_mock/
+│   └── mock_supplier.py
+├── starter/
+├── requirements.txt
+├── manage.py
+├── smoke_test.py
+├── API_CONTRACT.md
+├── .env.example
+└── DECISIONS.md
+```
+
+## Setup
+
+### Prerequisites
+
+- Python 3.11 or newer
+- PostgreSQL database
+- Git
+- API key for a supported LLM provider when testing the AI assistant
+
+### 1. Clone the repository
 
 ```bash
-python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
+git clone https://github.com/harshithapra/VIKMO-DealerDesk-Assignment.git
+cd VIKMO-DealerDesk-Assignment
+```
+
+### 2. Create and activate a virtual environment
+
+Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+### 3. Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
+
+### 4. Configure environment variables
+
+Create a local `.env` file using `.env.example` as a reference.
+
+Configure the following variables as required:
+
+- `DATABASE_URL`
+- `SUPPLIER_API_URL`
+- `SUPPLIER_API_KEY`
+- The API key for your chosen LLM provider
+
+Never commit `.env` or actual API keys to GitHub.
+
+### 5. Apply migrations and seed data
+
+```bash
 python manage.py migrate
 python manage.py seed_data
-python manage.py runserver 0.0.0.0:8000
 ```
 
-5. Check it: `curl http://localhost:8000/api/health/` → `{"status": "ok"}`
-
-## Before you submit
-
-Reset to a fresh database, seed twice, and run the smoke test from the bundle:
+Run the application:
 
 ```bash
-python smoke_test.py --base-url http://localhost:8000 --track django   # or --track aiml
+python manage.py runserver
 ```
 
-Add new packages to `requirements.txt` as you go. The grader installs it on Linux with Python 3.11+.
+The development server runs at `http://127.0.0.1:8000/`.
 
-Docker is optional. If you add a `Dockerfile` or `docker-compose.yml` for yourself, keep the plain commands above working too: the grader uses those, not Docker.
+## API Endpoints
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/health/` | Check application health |
+| `GET /api/products/` | Retrieve products |
+| `GET /api/forecast/<sku>/` | Retrieve a product forecast |
+| `GET /api/reorder-suggestions/` | Retrieve reorder suggestions |
+
+Refer to `API_CONTRACT.md` for the expected API contract.
+
+## Forecast Data
+
+The generated forecast CSV is located at `ml/forecast.csv`.
+
+It contains 160 records covering 40 SKUs across four forecast weeks.
+
+## Supplier Mock
+
+Start the supplier mock service in a separate terminal using the project's configured Python environment and the appropriate command for `supplier_mock/mock_supplier.py`.
+
+Configure the supplier URL and API key in your local environment before testing supplier integration.
+
+## Testing
+
+Check Django configuration:
+
+```bash
+python manage.py check
+```
+
+Check database connectivity:
+
+```bash
+python manage.py shell -c "from django.db import connection; connection.ensure_connection(); print('Database connection successful')"
+```
+
+The provided smoke test can be run against a freshly prepared test database:
+
+```bash
+python smoke_test.py --base-url http://localhost:8000 --track aiml
+```
+
+**Warning:** The smoke test can modify database records. Use a disposable test database, not a database containing data you need to preserve.
+
+## Design Decisions
+
+See `DECISIONS.md` for the design decisions, assumptions, trade-offs, and implementation details for this assignment.
+
+## Limitations
+
+- Live LLM responses require a valid provider API key.
+- The project is configured for local development and assignment evaluation.
+- Production deployment requires additional security, monitoring, and configuration.
+
+## Author
+
+Harshitha Prakash
+
+## Repository
+
+https://github.com/harshithapra/VIKMO-DealerDesk-Assignment
