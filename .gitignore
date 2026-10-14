@@ -179,3 +179,14 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Environment variables and secrets
+.env.*
+!.env.example
+
+# Python virtual environments
+starter/.venv/
+
+# Sensitive local files
+*.pem
+*.key
