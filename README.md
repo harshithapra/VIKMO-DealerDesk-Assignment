@@ -190,3 +190,7 @@ Harshitha Prakash
 ## Repository
 
 https://github.com/harshithapra/VIKMO-DealerDesk-Assignment
+
+## Video Demonstration
+
+[Watch my VIKMO DealerDesk AI/ML project walkthrough](https://drive.google.com/file/d/1pa-Ij5trF_hFBKRptIS4Y0ZbGkCfjm-J/view?usp=sharing)
