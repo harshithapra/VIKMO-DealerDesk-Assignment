@@ -20,7 +20,7 @@ from .models import Product, Dealer, Order, OrderItem
 logger = logging.getLogger(__name__)
 
 GST_RATE = Decimal("0.18")
-GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_MODEL = "gemini-3.8-flash"
 MAX_TOOL_ROUNDS = 6
 MAX_HISTORY_MESSAGES = 12
 
